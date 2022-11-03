@@ -1,5 +1,19 @@
-
 <script setup>
+  import axios from 'axios';
+  import {onMounted, reactive, ref} from "vue";
+
+  const allMovies = ref([]);
+  const isLoading = ref(true);
+
+  onMounted(async () => {
+    const movies = await axios.get('https://ghibliapi.herokuapp.com/films/');
+    const { status, data } = movies;
+
+    if (status === 200) {
+      allMovies.value = data;
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
@@ -14,11 +28,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>id</td>
-                    <td>title</td>
-                    <td>date</td>
+                <template v-if="!isLoading">
+                  <tr v-for="movie in allMovies" :key="movie.id">
+                    <td>{{ movie.id }}</td>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.release_date }}</td>
                     <td>👀</td>
+                  </tr>
+                </template>
+                <tr v-else>
+                  <td colspan="4">Chargement...</td>
                 </tr>
             </tbody>
         </table>
