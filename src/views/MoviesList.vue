@@ -1,6 +1,6 @@
 <script setup>
   import axios from 'axios';
-  import {onMounted, reactive, ref} from "vue";
+  import {onMounted, ref} from "vue";
 
   const allMovies = ref([]);
   const isLoading = ref(true);
@@ -33,7 +33,9 @@
                     <td>{{ movie.id }}</td>
                     <td>{{ movie.title }}</td>
                     <td>{{ movie.release_date }}</td>
-                    <td>👀</td>
+                    <td>
+                      <RouterLink :to="{ name: 'details', params: { id: movie.id }}">👀</RouterLink>
+                    </td>
                   </tr>
                 </template>
                 <tr v-else>

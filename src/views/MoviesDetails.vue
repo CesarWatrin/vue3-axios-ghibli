@@ -1,20 +1,40 @@
 
 <script setup>
+  import {onMounted, ref} from "vue";
+  import axios from "axios";
+  import { useRoute } from 'vue-router';
+
+  const route = useRoute();
+  const movieId = route.params.id;
+  const currentMovie = ref({});
+  const isLoading = ref(true);
+
+  onMounted(async () => {
+    const movie = await axios.get('https://ghibliapi.herokuapp.com/films/' + movieId);
+    const { status, data } = movie;
+
+    if (status === 200) {
+      currentMovie.value = data;
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
   <div>
         <div class="film-container">
             <div class="film">
+              <template v-if="!isLoading">
                 <div class="film-preview" >
-                    <img src='https://www.linflux.com/wp-content/uploads/2021/08/Ponyo.jpg' alt='affiche' />
+                  <img :src="currentMovie.image" alt='affiche' />
                 </div>
                 <div class="film-info">
-                    <h2>Title</h2>
-                    <h6>Date</h6>
-                    <span> autre info </span>
-
+                  <h2>{{ currentMovie.title }}</h2>
+                  <h6>{{ currentMovie.release_date }}</h6>
+                  <span>{{ currentMovie.description }}</span>
                 </div>
+              </template>
+              <p class="loading" v-else>Chargement...</p>
             </div>
         </div>
     </div>
@@ -75,5 +95,11 @@
 	padding: 30px;
 	position: relative;
 	width: 100%;
+}
+
+.loading {
+  text-align: center;
+  width: 100%;
+  padding: 40px;
 }
 </style>
